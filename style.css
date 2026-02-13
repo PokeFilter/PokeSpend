@@ -1,0 +1,108 @@
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(180deg, #4b4be0, #1b0033);
+  color: white;
+  overflow: hidden;
+}
+
+.container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2vh 2vw;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+/* Titles */
+h1 {
+  font-weight: 800;
+  font-size: clamp(20px, 3vh, 30px);
+  margin: 0;
+}
+
+h2 {
+  font-weight: 600;
+  font-size: clamp(14px, 2vh, 18px);
+  margin: 5px 0 15px;
+  opacity: 0.9;
+}
+
+button {
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  margin-bottom: 2vh;
+  transition: 0.2s ease;
+}
+
+button:hover {
+  transform: scale(1.05);
+}
+
+/* Board */
+#board {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5vh;
+}
+
+/* Tier row */
+.tier {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2vw;
+}
+
+/* Dollar label */
+.tier-label {
+  font-size: clamp(18px, 3vh, 26px);
+  font-weight: 800;
+  width: 60px;
+  text-align: right;
+}
+
+/* Pokemon grid */
+.pokemon-row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr); /* EXACTLY 5 */
+  gap: 1vw;
+  width: min(80vw, 800px);
+}
+
+/* Cards */
+.pokemon-card {
+  background: rgba(255,255,255,0.08);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1 / 1;   /* 🔥 Perfect square */
+  transition: 0.2s ease;
+}
+
+.pokemon-card:hover {
+  transform: translateY(-3px);
+  background: rgba(255,255,255,0.15);
+}
+
+.pokemon-card img {
+  width: 75%;
+  height: auto;
+}
+
+/* 📱 Mobile scaling */
+@media (max-width: 768px) {
+  .pokemon-row {
+    width: 95vw; /* prevent spill */
+    gap: 2vw;
+  }
+}
