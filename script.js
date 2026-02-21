@@ -25,9 +25,9 @@ function calculateBST(stats) {
 }
 
 function assignTier(bst) {
-  if (bst >= 600) return 5;
-  if (bst >= 500) return 4;
-  if (bst >= 400) return 3;
+  if (bst >= 550) return 5;
+  if (bst >= 450) return 4;
+  if (bst >= 350) return 3;
   if (bst >= 300) return 2;
   return 1;
 }
