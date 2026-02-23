@@ -8,7 +8,7 @@
 
   <!-- 🔥 Better Font -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
-
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <link rel="stylesheet" href="style.css">
 </head>
 
@@ -19,7 +19,10 @@
     <h1>Build Your Team!</h1>
     <h2>Budget: $15</h2>
 
-    <button id="generateBtn">New Board</button>
+    <div class="button-row">
+      <button id="generateBtn">Generate Board</button>
+      <button id="copyBtn">Copy Image</button>
+    </div>
 
     <div id="board"></div>
   </div>
