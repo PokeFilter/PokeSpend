@@ -31,25 +31,51 @@ async function copyBoardToClipboard() {
   const canvas = await html2canvas(boardElement, {
     backgroundColor: null,
     scale: 2,
-    useCORS: true, 
-    allowTaint: false
+    useCORS: true
   });
 
-  canvas.toBlob(async (blob) => {
+  const blob = await new Promise(resolve =>
+    canvas.toBlob(resolve, "image/png")
+  );
+
+  const file = new File([blob], "pokemon-board.png", {
+    type: "image/png"
+  });
+
+  const canClipboard =
+    navigator.clipboard &&
+    window.ClipboardItem &&
+    typeof navigator.clipboard.write === "function";
+
+  const canShare =
+    navigator.canShare &&
+    navigator.canShare({ files: [file] });
+
+
+  if (canClipboard) {
     try {
       await navigator.clipboard.write([
         new ClipboardItem({ "image/png": blob })
       ]);
-
       copyBtn.textContent = "Copied!";
-      setTimeout(() => {
-        copyBtn.textContent = "Copy Image";
-      }, 1500);
+      setTimeout(() => (copyBtn.textContent = "Copy Image"), 1500);
+      return;
+    } catch (err) {}
+  }
 
-    } catch (err) {
-      alert("Copy failed. Try Chrome desktop.");
-    }
-  });
+
+  if (canShare) {
+    try {
+      await navigator.share({
+        files: [file],
+        title: "Pokemon Board"
+      });
+      return;
+    } catch (err) {}
+  }
+
+  // Fallback
+  downloadImage(canvas);
 }
 
 function assignTier(bst) {
