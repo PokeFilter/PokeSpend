@@ -108,3 +108,23 @@ button:hover {
     gap: 2vw;
   }
 }
+
+.button-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 2vh;
+}
+
+.button-row button {
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.button-row button:hover {
+  transform: scale(1.05);
+}
