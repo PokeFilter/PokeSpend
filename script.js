@@ -1,5 +1,6 @@
 const board = document.getElementById("board");
 const generateBtn = document.getElementById("generateBtn");
+const copyBtn = document.getElementById("copyBtn");
 
 const TIERS = {
   5: [],
@@ -9,7 +10,7 @@ const TIERS = {
   1: []
 };
 
-const usedPokemon = new Set(); // 🔥 tracks duplicates
+const usedPokemon = new Set();
 
 function getRandomId() {
   return Math.floor(Math.random() * 1025) + 1;
@@ -22,6 +23,33 @@ async function fetchPokemon(id) {
 
 function calculateBST(stats) {
   return stats.reduce((sum, stat) => sum + stat.base_stat, 0);
+}
+
+async function copyBoardToClipboard() {
+  const boardElement = document.getElementById("board");
+
+  const canvas = await html2canvas(boardElement, {
+    backgroundColor: null,
+    scale: 2,
+    useCORS: true, 
+    allowTaint: false
+  });
+
+  canvas.toBlob(async (blob) => {
+    try {
+      await navigator.clipboard.write([
+        new ClipboardItem({ "image/png": blob })
+      ]);
+
+      copyBtn.textContent = "Copied!";
+      setTimeout(() => {
+        copyBtn.textContent = "Copy Image";
+      }, 1500);
+
+    } catch (err) {
+      alert("Copy failed. Try Chrome desktop.");
+    }
+  });
 }
 
 function assignTier(bst) {
@@ -52,7 +80,7 @@ async function generateBoard() {
     const id = getRandomId();
     const data = await fetchPokemon(id);
 
-    // 🚫 Skip if already used
+
     if (usedPokemon.has(data.name)) continue;
 
     const bst = calculateBST(data.stats);
@@ -64,7 +92,7 @@ async function generateBoard() {
         sprite: data.sprites.other["official-artwork"].front_default
       });
 
-      usedPokemon.add(data.name); // ✅ mark as used
+      usedPokemon.add(data.name);
     }
   }
 
@@ -91,6 +119,7 @@ function renderBoard() {
       card.classList.add("pokemon-card");
 
       const img = document.createElement("img");
+      img.crossOrigin = "anonymous";  
       img.src = poke.sprite;
 
 
@@ -106,3 +135,4 @@ function renderBoard() {
 
 generateBtn.addEventListener("click", generateBoard);
 generateBoard();
+copyBtn.addEventListener("click", copyBoardToClipboard);
