@@ -51,7 +51,7 @@ async function copyBoardToClipboard() {
     navigator.canShare &&
     navigator.canShare({ files: [file] });
 
-
+ 
   if (canClipboard) {
     try {
       await navigator.clipboard.write([
@@ -63,7 +63,7 @@ async function copyBoardToClipboard() {
     } catch (err) {}
   }
 
-
+  
   if (canShare) {
     try {
       await navigator.share({
@@ -112,10 +112,27 @@ async function generateBoard() {
     const bst = calculateBST(data.stats);
     const tier = assignTier(bst);
 
+    // if (TIERS[tier].length < 5) {
+    //   TIERS[tier].push({
+    //     name: data.name,
+    //     sprite: data.sprites.other["official-artwork"].front_default
+    //   });
+
+    //   usedPokemon.add(data.name);
+    // }
+
     if (TIERS[tier].length < 5) {
+
+      const isShiny = Math.random() < 0.02; // 1 in 100 chance
+
+      const sprite = isShiny
+        ? data.sprites.other["official-artwork"].front_shiny
+        : data.sprites.other["official-artwork"].front_default;
+
       TIERS[tier].push({
         name: data.name,
-        sprite: data.sprites.other["official-artwork"].front_default
+        sprite: sprite,
+        shiny: isShiny
       });
 
       usedPokemon.add(data.name);
