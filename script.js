@@ -1,6 +1,6 @@
-const board = document.getElementById("board");
 const generateBtn = document.getElementById("generateBtn");
 const copyBtn = document.getElementById("copyBtn");
+const formsToggle = document.getElementById("formsToggle");
 
 const TIERS = {
   5: [],
@@ -18,6 +18,11 @@ function getRandomId() {
 
 async function fetchPokemon(id) {
   const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
+  return await res.json();
+}
+
+async function fetchSpecies(url) {
+  const res = await fetch(url);
   return await res.json();
 }
 
@@ -51,7 +56,6 @@ async function copyBoardToClipboard() {
     navigator.canShare &&
     navigator.canShare({ files: [file] });
 
- 
   if (canClipboard) {
     try {
       await navigator.clipboard.write([
@@ -60,10 +64,9 @@ async function copyBoardToClipboard() {
       copyBtn.textContent = "Copied!";
       setTimeout(() => (copyBtn.textContent = "Copy Image"), 1500);
       return;
-    } catch (err) {}
+    } catch (err) { }
   }
 
-  
   if (canShare) {
     try {
       await navigator.share({
@@ -71,10 +74,9 @@ async function copyBoardToClipboard() {
         title: "Pokemon Board"
       });
       return;
-    } catch (err) {}
+    } catch (err) { }
   }
 
-  // Fallback
   downloadImage(canvas);
 }
 
@@ -88,8 +90,7 @@ function assignTier(bst) {
 
 async function generateBoard() {
   board.innerHTML = "Loading...";
-  
-  // Reset tiers + used tracker
+
   for (let tier in TIERS) {
     TIERS[tier] = [];
   }
@@ -104,29 +105,39 @@ async function generateBoard() {
     attempts++;
 
     const id = getRandomId();
-    const data = await fetchPokemon(id);
+    const baseData = await fetchPokemon(id);
 
+    let data = baseData;
+
+    // ✅ If toggle ON → allow forms
+    if (formsToggle.checked) {
+      try {
+        const speciesData = await fetchSpecies(baseData.species.url);
+
+        const forms = speciesData.varieties;
+
+        const randomForm =
+          forms[Math.floor(Math.random() * forms.length)];
+
+        const formRes = await fetch(randomForm.pokemon.url);
+        data = await formRes.json();
+      } catch (err) {
+        console.warn("Form fetch failed, using base form");
+        data = baseData;
+      }
+    }
 
     if (usedPokemon.has(data.name)) continue;
 
     const bst = calculateBST(data.stats);
     const tier = assignTier(bst);
 
-    // if (TIERS[tier].length < 5) {
-    //   TIERS[tier].push({
-    //     name: data.name,
-    //     sprite: data.sprites.other["official-artwork"].front_default
-    //   });
-
-    //   usedPokemon.add(data.name);
-    // }
-
     if (TIERS[tier].length < 5) {
-
-      const isShiny = Math.random() < 0.02; // 1 in 100 chance
+      const isShiny = Math.random() < 0.02; // 2%
 
       const sprite = isShiny
-        ? data.sprites.other["official-artwork"].front_shiny
+        ? (data.sprites.other["official-artwork"].front_shiny ||
+          data.sprites.front_shiny)
         : data.sprites.other["official-artwork"].front_default;
 
       TIERS[tier].push({
@@ -145,7 +156,7 @@ async function generateBoard() {
 function renderBoard() {
   board.innerHTML = "";
 
-  [5,4,3,2,1].forEach(tier => {
+  [5, 4, 3, 2, 1].forEach(tier => {
     const tierDiv = document.createElement("div");
     tierDiv.classList.add("tier");
 
@@ -162,12 +173,10 @@ function renderBoard() {
       card.classList.add("pokemon-card");
 
       const img = document.createElement("img");
-      img.crossOrigin = "anonymous";  
+      img.crossOrigin = "anonymous";
       img.src = poke.sprite;
 
-
       card.appendChild(img);
-      
       row.appendChild(card);
     });
 
